@@ -1,0 +1,30 @@
+name: update-flake-lock
+
+on:
+  workflow_dispatch: # allows manual triggering
+  schedule:
+    - cron: '0 0 * * 1' # Run weekly
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Determinate Nix
+        uses: DeterminateSystems/determinate-nix-action@v3
+      - name: Update flake.lock
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: DeterminateSystems/update-flake-lock@main
+        with:
+          commit-msg: 'build(deps): update flake.lock'
+          pr-reviewers: m3l6h
+          pr-labels: |
+            automated
+      - name: Print PR number
+        if: ${{ github.event_name != 'pull_request' }}
+        run: "echo PR is #${{ steps.update.outputs.pull-request-number }}"
