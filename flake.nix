@@ -55,7 +55,14 @@
                   ;
               };
             in
-            test.driver;
+            pkgs.runCommand "m3l6h-${pname}-test-run"
+              {
+                nativeBuildInputs = [ test.driver ];
+              }
+              ''
+                touch $out  # Create an empty output file to satisfy Nix
+                ${test.driver}/bin/nixos-test-driver
+              '';
         };
 
       flake = {

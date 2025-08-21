@@ -10,6 +10,7 @@ Provides both a home-manager module and a `.zshrc` for easy consumption.
 
 - [features](#features)
 - [development](#development)
+  - [dotfiles](#dotfiles)
   - [testing](#testing)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -25,13 +26,21 @@ Provides both a home-manager module and a `.zshrc` for easy consumption.
 
 All modules have been defined in the `modules/` folder.
 
+### dotfiles
+
+Generate dotfiles with:
+
+```sh
+nix build .#checks.x86_64-linux.m3l6h-zsh-test
+./result/bin/nixos-test-drive
+```
+
 ### testing
 
 Run check tests with:
 
 ```sh
 nix flake check
-./result/bin/nixos-test-drive
 ```
 
 View test results with:
@@ -44,4 +53,5 @@ Perform interactive testing with:
 
 ```sh
 nix build .#checks.x86_64-linux.m3l6h-zsh-test.driverInteractive
+
 ```
