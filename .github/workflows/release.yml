@@ -1,0 +1,17 @@
+name: release-dotfiles-zsh
+
+on:
+  workflow_dispatch: # allows manual triggering
+  pull_request:: # temporary
+
+jobs:
+  build-pkg:
+    name: nix flake check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+      - uses: cachix/install-nix-action@v25
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      - run: nix flake check
+      - run: ls -lah dotfiles
