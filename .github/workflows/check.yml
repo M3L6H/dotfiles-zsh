@@ -24,6 +24,8 @@ jobs:
         with:
           github-token: ${{ steps.generate-token.outputs.token }}
       - name: nix-flake-check
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |-
           nix \
             --option access-tokens 'github.com=${{ steps.generate-token.outputs.token }}' \
