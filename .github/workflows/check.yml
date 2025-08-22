@@ -7,10 +7,9 @@ jobs:
   build-pkg:
     name: nix flake check
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
     steps:
       - uses: actions/checkout@v5.0.0
-      - uses: DeterminateSystems/determinate-nix-action@main
-      - run: nix flake check -L
+      - uses: cachix/install-nix-action@v25
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      - run: nix flake check -v -L --show-trace
