@@ -110,25 +110,33 @@ jobs:
         with:
           ref: ${{ steps.pr.outputs.head_ref }}
           fetch-depth: 0
+      - name: get-job-url
+        id: job-url
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |-
+          set -euo pipefail
+          jobs_url="${{ github.api_url }}/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs"
+          job_name="${{ github.job }}"
+          job_id=$(curl -sSf "$jobs_url" \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            | jq --arg job_name "$job_name" '.jobs[] | select(.name == $job_name) | .id')
+          echo "Job ID: $job_id"
+          echo "url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/$job_id" >> "$GITHUB_OUTPUT"
       - name: register-check
         id: check
-        env:
-          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
-        run: |-
-          repo='${{ github.repository }}'
-          read -r -d '' body << EOF
-          {
-            "name": "build-${{ matrix.arch }}-${{ matrix.os }}",
-            "head_sha": "$(git log -1 '--format=format:%H')",
-            "details_url": "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          }
-          EOF
-          echo "$body"
-          res="$(echo "$body" | gh api "/repos/${repo}/check-runs" --input -)"
-          echo "$res"
-          id="$(echo "$res" | jq -r '.id')"
-          echo "$id"
-          echo "id=${id}" >> "${GITHUB_OUTPUT}"
+        uses: LouisBrunner/checks-action@v2.0.0
+        with:
+          token: "${{ steps.generate-token.outputs.token }}"
+          name: "build-${{ matrix.arch }}-${{ matrix.os }}"
+          details_url: "${{ steps.job-url.outputs.url }}"
+          status: in_progress
+          output: |-
+            {
+              "name": "Build ${{ matrix.arch }}-${{ matrix.os }}"
+            }
       - name: install-nix
         uses: DeterminateSystems/nix-installer-action@v19
         with:
@@ -184,20 +192,11 @@ jobs:
           commit_author: "${{ steps.import-gpg.outputs.name }} <${{ steps.import-gpg.outputs.email }}>"
           commit_user_name: ${{ steps.import-gpg.outputs.name }}
           commit_user_email: ${{ steps.import-gpg.outputs.email }}
-      - name: mark-check-successful
-        env:
-          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
-        run: |-
-          id='${{ steps.check.id }}'
-          repo='${{ github.repository }}'
-          cat << EOF | gh api --method PATCH "/repos/${repo}/check-runs/id" --input -
-          {
-            "name": "✅ build-${{ matrix.arch }}-${{ matrix.os }}✅",
-            "details_url": "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}",
-            "status": "completed",
-            "conclusion": "success",
-            "completed_at": "$(date -u +%Y-%m-%dT%H-%M-%SZ)",
-            "output[title]": "build-${{ matrix.arch }}-${{ matrix.os }}",
-            "output[summary]": "Successfully generated dotfiles for \`${{ matrix.arch }}-${{ matrix.os }}\`"
-          }
-          EOF
+      - name: register-check
+        if: always()
+        uses: LouisBrunner/checks-action@v2.0.0
+        with:
+          token: "${{ steps.generate-token.outputs.token }}"
+          check_id: "${{ steps.check.outputs.check_id }}"
+          conclusion: ${{ job.status }}
+          details_url: "${{ steps.job-url.outputs.url }}"
