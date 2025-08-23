@@ -1,6 +1,9 @@
 name: check-dotfiles-zsh
 
 on:
+  issue_comment:
+    types:
+      - created
   pull_request:
   push:
     branches:
