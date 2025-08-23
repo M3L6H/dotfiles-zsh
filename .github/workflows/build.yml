@@ -129,6 +129,7 @@ jobs:
         id: check
         uses: LouisBrunner/checks-action@v2.0.0
         with:
+          sha: ${{ steps.pr.outputs.head_ref }}
           token: "${{ steps.generate-token.outputs.token }}"
           name: "build-${{ matrix.arch }}-${{ matrix.os }}"
           details_url: "${{ steps.job-url.outputs.url }}"
@@ -148,6 +149,8 @@ jobs:
         run: |-
           # Install nix-darwin
           sed -i '' "s/simple/$(scutil --get LocalHostName)/" flake.nix
+          sed -i '' "s/\$(whoami)/$(whoami)/" flake.nix
+          sed -i '' 's/aarch64/${{ matrix.arch }}/' flake.nix
           sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin
           sudo mv /etc/nix/nix.custom.conf /etc/nix/nix.custom.conf.before-nix-darwin
           sudo nix --extra-experimental-features "nix-command flakes" \
@@ -156,6 +159,8 @@ jobs:
 
           # Verify linux-builder is running
           sudo launchctl list org.nixos.linux-builder
+          # Test SSH connection to linux-builder
+          sudo ssh -o StrictHostKeyChecking=no linux-builder whoami || echo "SSH to linux-builder failed"
       - name: verify-nix-config
         if: ${{ matrix.os == 'darwin' }}
         run: |-
@@ -185,8 +190,10 @@ jobs:
           git_user_signingkey: true
           git_commit_gpgsign: true
       - name: git-pull
+        id: pull
         run: |-
           git pull
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: commit-changes
         id: commit
         uses: stefanzweifel/git-auto-commit-action@v6
@@ -199,6 +206,7 @@ jobs:
         if: always()
         uses: LouisBrunner/checks-action@v2.0.0
         with:
+          sha: "${{ steps.commit.outputs.changes_detected && steps.commit.outputs.commit_hash || steps.pull.outputs.sha }}"
           token: "${{ steps.generate-token.outputs.token }}"
           check_id: "${{ steps.check.outputs.check_id }}"
           conclusion: ${{ job.status }}
@@ -206,5 +214,5 @@ jobs:
           output: |-
             {
               "name": "Build ${{ matrix.arch }}-${{ matrix.os }}",
-              "summary": "Finished building dotfiles for `build-${{ matrix.arch }}-${{ matrix.os }}`:\n- ${{ steps.steps.build.outcome == 'success' && '✅' || '❌' }} build\n- ${{ steps.steps.commit.outcome == 'success' && '✅' || '❌' }} commit"
+              "summary": "Finished building dotfiles for `build-${{ matrix.arch }}-${{ matrix.os }}`:\n- ${{ steps.steps.build.conclusion == 'success' && '✅' || '❌' }} build\n- ${{ steps.steps.commit.conclusion == 'success' && '✅' || '❌' }} commit"
             }
