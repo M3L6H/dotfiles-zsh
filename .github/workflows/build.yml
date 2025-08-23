@@ -1,0 +1,203 @@
+name: build-dotfiles-zsh
+
+on:
+  issue_comment:
+    types:
+      - created
+
+jobs:
+  matrix:
+    name: prepare-build-matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: generate-matrix
+        id: set-matrix
+        run: |-
+          comment='${{ github.event.comment.body }}'
+          k="${comment% *}"
+          v="${comment#* }"
+
+          make_matrix() {
+            echo '{'
+            echo '"arch": ['
+            if [ "$k" = 'build' ]; then
+              f='false'
+              for arch in 'aarch64' 'x86_64'; do
+                for os in 'darwin' 'linux'; do
+                  if [ "$v" = 'all' ] || [ "$v" = "$arch" ] || [ "$v" = "$os" ] || [ "$v" = "${arch}-${os}" ]; then
+                    if "$f"; then echo ','; fi
+                    echo "\"${arch}\""
+                    f='true'
+                  fi
+                done
+              done
+            fi
+            echo '],'
+            echo '"os": ['
+            if [ "$k" = 'build' ]; then
+              f='false'
+              for arch in 'aarch64' 'x86_64'; do
+                for os in 'darwin' 'linux'; do
+                  if [ "$v" = 'all' ] || [ "$v" = "$arch" ] || [ "$v" = "$os" ] || [ "$v" = "${arch}-${os}" ]; then
+                    if "$f"; then echo ','; fi
+                    echo "\"${os}\""
+                    f='true'
+                  fi
+                done
+              done
+            fi
+            echo '],'
+            echo '"include": ['
+            if [ "$k" = 'build' ]; then
+              f='false'
+              for arch in 'aarch64' 'x86_64'; do
+                for os in 'darwin' 'linux'; do
+                  if [ "$v" = 'all' ] || [ "$v" = "$arch" ] || [ "$v" = "$os" ] || [ "$v" = "${arch}-${os}" ]; then
+                    if "$f"; then echo ','; fi
+                    runner=''
+                    case "${arch}-${os}" in
+                      'aarch64-darwin') runner='macos-15' ;;
+                      'aarch64-linux') runner='ubuntu-24.04-arm' ;;
+                      'x86_64-darwin') runner='macos-13' ;;
+                      'x86_64-linux') runner='ubuntu-24.04' ;;
+                    esac
+                    echo "{\"arch\": \"${arch}\", \"os\": \"${os}\", \"runner\": \"${runner}\"}"
+                    f='true'
+                  fi
+                done
+              done
+            fi
+            echo ']'
+            echo '}'
+          }
+
+          matrix="$(make_matrix | jq '.arch |= unique | .os |= unique')"
+          echo "$matrix" | jq .
+          echo "matrix=$(echo "$matrix" | jq -c .)" >> "${GITHUB_OUTPUT}"
+  build:
+    needs: matrix
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
+    name: build-${{ matrix.arch }}-${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: write
+    steps:
+      - name: generate-token
+        uses: actions/create-github-app-token@v2
+        id: generate-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+      - name: get-pr-branch
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ steps.generate-token.outputs.token }}
+          script: |
+            const prNumber = context.payload.issue.number;
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+            core.setOutput('head_ref', pr.head.ref);
+      - name: checkout
+        uses: actions/checkout@v5.0.0
+        with:
+          ref: ${{ steps.pr.outputs.head_ref }}
+          fetch-depth: 0
+      - name: register-check
+        id: check
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |-
+          repo='${{ github.repository }}'
+          read -r -d '' body << EOF
+          {
+            "name": "build-${{ matrix.arch }}-${{ matrix.os }}",
+            "head_sha": "$(git log -1 '--format=format:%H')",
+            "details_url": "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          }
+          EOF
+          echo "$body"
+          res="$(echo "$body" | gh api "/repos/${repo}/check-runs" --input -)"
+          echo "$res"
+          id="$(echo "$res" | jq -r '.id')"
+          echo "$id"
+          echo "id=${id}" >> "${GITHUB_OUTPUT}"
+      - name: install-nix
+        uses: DeterminateSystems/nix-installer-action@v19
+        with:
+          github-token: ${{ steps.generate-token.outputs.token }}
+      - name: configure-nix-darwin
+        if: ${{ matrix.os == 'darwin' }}  # Only for macOS runners
+        working-directory: darwin
+        run: |-
+          # Install nix-darwin
+          sed -i '' "s/simple/$(scutil --get LocalHostName)/" flake.nix
+          sudo mv /etc/nix/nix.conf /etc/nix/nix.conf.before-nix-darwin
+          sudo mv /etc/nix/nix.custom.conf /etc/nix/nix.custom.conf.before-nix-darwin
+          sudo nix --extra-experimental-features "nix-command flakes" \
+            --option access-tokens 'github.com=${{ steps.generate-token.outputs.token }}' \
+            run nix-darwin -- switch --flake .
+
+          # Verify linux-builder is running
+          sudo launchctl list org.nixos.linux-builder
+      - name: verify-nix-config
+        if: ${{ matrix.os == 'darwin' }}
+        run: |-
+          nix show-config system-features | grep "apple-virt nixos-test"
+      - name: regenerate-dotfiles
+        run: |-
+          rm -rf dotfiles
+          mkdir dotfiles
+          nix \
+            --option access-tokens 'github.com=${{ steps.generate-token.outputs.token }}' \
+            build .#packages.${{ matrix.arch }}-${{ matrix.os }}.m3l6h-zsh-build-dotfiles -v -L
+          ls result
+          ./result/bin/nixos-test-driver
+      - name: sanitize-dotfiles
+        run: |-
+          chmod +x scripts/sanitize-dotfiles.sh
+          ./scripts/sanitize-dotfiles.sh dotfiles
+
+          echo "DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
+      - name: import-gpg-key
+        id: import-gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+      - name: git-pull
+        run: |-
+          git pull
+      - name: commit-changes
+        uses: stefanzweifel/git-auto-commit-action@v6
+        with:
+          commit_message: "build(dotfiles): ${{ matrix.arch }}-${{ matrix.os }} - ${{ env.DATE }}"
+          commit_author: "${{ steps.import-gpg.outputs.name }} <${{ steps.import-gpg.outputs.email }}>"
+          commit_user_name: ${{ steps.import-gpg.outputs.name }}
+          commit_user_email: ${{ steps.import-gpg.outputs.email }}
+      - name: mark-check-successful
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |-
+          id='${{ steps.check.id }}'
+          repo='${{ github.repository }}'
+          cat << EOF | gh api --method PATCH "/repos/${repo}/check-runs/id" --input -
+          {
+            "name": "✅ build-${{ matrix.arch }}-${{ matrix.os }}✅",
+            "details_url": "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "$(date -u +%Y-%m-%dT%H-%M-%SZ)",
+            "output[title]": "build-${{ matrix.arch }}-${{ matrix.os }}",
+            "output[summary]": "Successfully generated dotfiles for \`${{ matrix.arch }}-${{ matrix.os }}\`"
+          }
+          EOF
