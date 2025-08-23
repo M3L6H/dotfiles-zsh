@@ -27,8 +27,6 @@ jobs:
         with:
           github-token: ${{ steps.generate-token.outputs.token }}
       - name: nix-flake-check
-        env:
-          NIX_CONFIG: "access-tokens = github.com=${{ secrets.NIX_PAT }}"
         run: |-
           nix \
             --option access-tokens 'github.com=${{ steps.generate-token.outputs.token }}' \
