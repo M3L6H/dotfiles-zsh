@@ -160,7 +160,8 @@ jobs:
         if: ${{ matrix.os == 'darwin' }}
         run: |-
           nix show-config system-features | grep "apple-virt nixos-test"
-      - name: regenerate-dotfiles
+      - name: build-dotfiles
+        id: build
         run: |-
           rm -rf dotfiles
           mkdir dotfiles
@@ -187,6 +188,7 @@ jobs:
         run: |-
           git pull
       - name: commit-changes
+        id: commit
         uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: "build(dotfiles): ${{ matrix.arch }}-${{ matrix.os }} - ${{ env.DATE }}"
@@ -204,5 +206,5 @@ jobs:
           output: |-
             {
               "name": "Build ${{ matrix.arch }}-${{ matrix.os }}",
-              "summary": "Finished building dotfiles for `build-${{ matrix.arch }}-${{ matrix.os }}`: ${{ success() && '✅' || '❌' }}"
+              "summary": "Finished building dotfiles for `build-${{ matrix.arch }}-${{ matrix.os }}`:\n- ${{ steps.steps.build.outcome == 'success' && '✅' || '❌' }} build\n- ${{ steps.steps.commit.outcome == 'success' && '✅' || '❌' }} commit"
             }
