@@ -1,9 +1,10 @@
 {
   home-manager,
-  module,
   impermanenceModule,
+  module,
   pname,
   pkgs,
+  system,
   ...
 }:
 let
@@ -82,8 +83,11 @@ pkgs.testers.runNixOSTest {
     print("All tests passed!")
 
     # Copy files for output
-    machine.copy_from_vm("/home/${username}/.zshrc", "dotfiles")
-    machine.copy_from_vm("/home/${username}/.zshenv", "dotfiles")
-    machine.copy_from_vm("/home/${username}/.zsh-custom", "dotfiles")
+    machine.copy_from_vm("/home/${username}/.zshrc", "dotfiles/${system}")
+    machine.copy_from_vm("/home/${username}/.zshenv", "dotfiles/${system}")
+    machine.copy_from_vm(
+        "/home/${username}/.zsh-custom/my-custom",
+        "dotfiles/${system}/.zsh-custom"
+    )
   '';
 }
