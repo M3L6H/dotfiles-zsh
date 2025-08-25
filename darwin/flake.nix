@@ -27,6 +27,7 @@
           nix.settings.experimental-features = "nix-command flakes";
 
           nix.linux-builder.enable = true;
+          nix.linux-builder.systems = [ "aarch64-linux" ];
           nix.settings.system-features = [
             "nixos-test"
             "apple-virt"
