@@ -147,6 +147,7 @@ jobs:
         if: ${{ matrix.os == 'darwin' }}  # Only for macOS runners
         working-directory: darwin
         run: |-
+          # https://nixos.org/manual/nixpkgs/stable/#sec-darwin-builder
           # Install nix-darwin
           sed -i '' "s/simple/$(scutil --get LocalHostName)/" flake.nix
           sed -i '' "s/\$(whoami)/$(whoami)/" flake.nix
@@ -157,10 +158,38 @@ jobs:
             --option access-tokens 'github.com=${{ steps.generate-token.outputs.token }}' \
             run nix-darwin -- switch --flake .
 
+          # Explicitly configure the linux-builder in nix.conf
+          mkdir -p ~/.config/nix
+          sudo cat << EOF >> ~/.config/nix/nix.conf
+          builders = ssh-ng://builder@linux-builder ${{ matrix.arch }}-linux /etc/nix/builder_ed25519 4 - - - c3NoLWVkMjU1MTkgQUFBQUMzTnphQzFsWkRJMU5URTVBQUFBSUpCV2N4Yi9CbGFxdDFhdU90RStGOFFVV3JVb3RpQzVxQkorVXVFV2RWQ2Igcm9vdEBuaXhvcwo=
+          builders-use-substitutes = true
+          trusted-users = root runner $(whoami)
+          EOF
+
+          cat ~/.config/nix/nix.conf
+
+          # Allow Nix to connect to remote builder on port 31022
+          # Permission denied for below
+          # sudo cat << EOF >> /etc/ssh/ssh_config.d/100-linux-builder.conf
+          # Host linux-builder
+          #   Hostname localhost
+          #   HostKeyAlias linux-builder
+          #   Port 31022
+          # EOF
+
+          # Restart Nix daemon
+          sudo launchctl kickstart -k system/org.nixos.nix-daemon
           # Verify linux-builder is running
           sudo launchctl list org.nixos.linux-builder
+
           # Test SSH connection to linux-builder
-          sudo ssh -o StrictHostKeyChecking=no linux-builder whoami || echo "SSH to linux-builder failed"
+          if ! sudo ssh -o StrictHostKeyChecking=no linux-builder "$(whoami)"; then
+            echo "SSH to linux-builder failed"
+            exit 1
+          fi
+
+          # Debug builder availability
+          nix build --dry-run .#packages.${{ matrix.arch }}-${{ matrix.os }}.m3l6h-zsh-build-dotfiles
       - name: verify-nix-config
         if: ${{ matrix.os == 'darwin' }}
         run: |-

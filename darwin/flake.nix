@@ -26,12 +26,28 @@
           # Necessary for using flakes on this system.
           nix.settings.experimental-features = "nix-command flakes";
 
-          nix.linux-builder.enable = true;
+          nix.linux-builder = {
+            enable = true;
+            systems = [ "aarch64-linux" ];
+            modules = [
+              "${nixpkgs}/nixos/modules/profiles/nix-builder-vm.nix"
+              {
+                virtualisation = {
+                  host.pkgs = pkgs;
+                  darwin-builder.hostPort = 22;
+                };
+              }
+            ];
+          };
           nix.settings.system-features = [
             "nixos-test"
             "apple-virt"
           ];
-          nix.settings.trusted-users = [ "$(whoami)" ];
+          nix.settings.trusted-users = [
+            "root"
+            "$(whoami)"
+            "@wheel"
+          ];
 
           # Set Git commit hash for darwin-version.
           system.configurationRevision = self.rev or self.dirtyRev or null;
