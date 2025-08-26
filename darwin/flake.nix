@@ -29,15 +29,6 @@
           nix.linux-builder = {
             enable = true;
             systems = [ "aarch64-linux" ];
-            modules = [
-              "${nixpkgs}/nixos/modules/profiles/nix-builder-vm.nix"
-              {
-                virtualisation = {
-                  host.pkgs = pkgs;
-                  darwin-builder.hostPort = 22;
-                };
-              }
-            ];
           };
           nix.settings.system-features = [
             "nixos-test"
