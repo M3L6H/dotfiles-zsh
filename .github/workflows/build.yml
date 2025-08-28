@@ -163,12 +163,14 @@ jobs:
           cat << EOF >> ~/.config/nix/nix.conf
           builders = ssh-ng://builder@linux-builder ${{ matrix.arch }}-linux /etc/nix/builder_ed25519 4 - - - c3NoLWVkMjU1MTkgQUFBQUMzTnphQzFsWkRJMU5URTVBQUFBSUpCV2N4Yi9CbGFxdDFhdU90RStGOFFVV3JVb3RpQzVxQkorVXVFV2RWQ2Igcm9vdEBuaXhvcwo=
           builders-use-substitutes = true
-          trusted-users = root runner $(whoami)
+          trusted-users = root $(whoami)
           EOF
 
+          echo 'Nix conf:'
           cat ~/.config/nix/nix.conf
 
           # Allow Nix to connect to remote builder on port 31022
+          echo 'Edit ssh_config.d:'
           cat << EOF | sudo tee -a /etc/ssh/ssh_config.d/100-linux-builder.conf
           Host linux-builder
             Hostname localhost
@@ -176,11 +178,10 @@ jobs:
             Port 31022
           EOF
 
-          cat /etc/ssh/ssh_config.d/100-linux-builder.conf
-
           # Restart Nix daemon
-          sudo launchctl kickstart -k system/org.nixos.nix-daemon
+          sudo launchctl kickstart -k system/org.nixos.nix-daemon && echo 'Successfully restarted nix daemon'
           # Verify linux-builder is running
+          echo 'org.nixos.linux-builder:'
           sudo launchctl list org.nixos.linux-builder
 
           # Test SSH connection to linux-builder
