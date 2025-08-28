@@ -2,7 +2,7 @@
 
 Nix-based repository containing my zsh configuration.
 
-Provides both a home-manager module and a `.zshrc` for easy consumption.
+Provides both a home-manager module and dotfiles for easy consumption.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -31,8 +31,9 @@ All modules have been defined in the `modules/` folder.
 Generate dotfiles with:
 
 ```sh
-nix build .#checks.x86_64-linux.m3l6h-zsh-test
+nix build .#packages.x86_64-linux.m3l6h-zsh-build-dotfiles
 ./result/bin/nixos-test-drive
+./scripts/sanitize-dotfiles.sh
 ```
 
 ### testing
