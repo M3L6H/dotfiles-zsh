@@ -183,9 +183,6 @@ jobs:
           # Verify linux-builder is running
           echo 'org.nixos.linux-builder:'
           sudo launchctl list org.nixos.linux-builder
-
-          # Debug builder availability
-          nix build --dry-run .#packages.${{ matrix.arch }}-${{ matrix.os }}.m3l6h-zsh-build-dotfiles
       - name: verify-nix-config
         if: ${{ matrix.os == 'darwin' }}
         run: |-
