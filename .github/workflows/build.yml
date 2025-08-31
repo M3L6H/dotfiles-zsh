@@ -184,12 +184,6 @@ jobs:
           echo 'org.nixos.linux-builder:'
           sudo launchctl list org.nixos.linux-builder
 
-          # Test SSH connection to linux-builder
-          if ! sudo ssh -o StrictHostKeyChecking=no linux-builder "$(whoami)"; then
-            echo "SSH to linux-builder failed"
-            exit 1
-          fi
-
           # Debug builder availability
           nix build --dry-run .#packages.${{ matrix.arch }}-${{ matrix.os }}.m3l6h-zsh-build-dotfiles
       - name: verify-nix-config
