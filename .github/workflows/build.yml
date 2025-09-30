@@ -156,10 +156,13 @@ jobs:
             --option access-tokens 'github.com=${{ steps.generate-token.outputs.token }}' \
             run nix-darwin -- switch --flake .
 
+          # Print builders
+          cat /etc/nix/machines
+
           # Explicitly configure the linux-builder in nix.conf
           mkdir -p ~/.config/nix
           cat << EOF >> ~/.config/nix/nix.conf
-          builders = ssh-ng://builder@linux-builder ${{ matrix.arch }}-linux /etc/nix/builder_ed25519 4 - - - c3NoLWVkMjU1MTkgQUFBQUMzTnphQzFsWkRJMU5URTVBQUFBSUpCV2N4Yi9CbGFxdDFhdU90RStGOFFVV3JVb3RpQzVxQkorVXVFV2RWQ2Igcm9vdEBuaXhvcwo=
+          builders = ssh-ng://builder@linux-builder ${{ matrix.arch }}-linux /etc/nix/builder_ed25519 1 1 kvm,benchmark,big-parallel - c3NoLWVkMjU1MTkgQUFBQUMzTnphQzFsWkRJMU5URTVBQUFBSUpCV2N4Yi9CbGFxdDFhdU90RStGOFFVV3JVb3RpQzVxQkorVXVFV2RWQ2Igcm9vdEBuaXhvcwo=
           builders-use-substitutes = true
           trusted-users = root $(whoami)
           EOF
@@ -167,7 +170,11 @@ jobs:
           echo 'Nix conf:'
           cat ~/.config/nix/nix.conf
 
+          # Ensure permissions on ssh key are correct
+          sudo chmod 600 /etc/nix/builder_ed25519
+
           # Pre-accept linux-builder SSH host key
+          echo 'Add builder to known hosts:'
           sudo ssh-keyscan -t ed25519 -p 31022 linux-builder | sudo tee /etc/ssh/ssh_known_hosts || echo "Failed to scan linux-builder host key"
 
           # Allow Nix to connect to remote builder on port 31022
@@ -176,6 +183,7 @@ jobs:
           cat << EOF | sudo tee /etc/ssh/ssh_config.d/100-linux-builder.conf
           Host linux-builder
             Hostname 127.0.0.1
+            HostKeyAlias linux-builder
             User builder
             Port 31022
             IdentityFile /etc/nix/builder_ed25519
