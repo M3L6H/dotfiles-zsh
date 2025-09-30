@@ -145,6 +145,9 @@ jobs:
         if: ${{ matrix.os == 'darwin' }} # Only for macOS runners
         working-directory: darwin
         run: |-
+          # Make directory for logs
+          sudo mkdir -p /var/log
+
           # https://nixos.org/manual/nixpkgs/stable/#sec-darwin-builder
           # Install nix-darwin
           sed -i '' "s/simple/$(scutil --get LocalHostName)/" flake.nix
@@ -205,10 +208,6 @@ jobs:
           # Verify linux-builder is running
           echo '>>> org.nixos.linux-builder:'
           sudo launchctl list org.nixos.linux-builder
-
-          # Print linux-builder logs
-          echo '>>> Linux Builder logs:'
-          cat /var/log/darwin-builder.log
       - name: verify-nix-config
         if: ${{ matrix.os == 'darwin' }}
         run: |-
