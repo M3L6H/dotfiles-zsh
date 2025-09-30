@@ -1,10 +1,8 @@
 name: build-dotfiles-zsh
-
 on:
   issue_comment:
     types:
       - created
-
 jobs:
   matrix:
     name: prepare-build-matrix
@@ -144,7 +142,7 @@ jobs:
         with:
           github-token: ${{ steps.generate-token.outputs.token }}
       - name: configure-nix-darwin
-        if: ${{ matrix.os == 'darwin' }}  # Only for macOS runners
+        if: ${{ matrix.os == 'darwin' }} # Only for macOS runners
         working-directory: darwin
         run: |-
           # https://nixos.org/manual/nixpkgs/stable/#sec-darwin-builder
@@ -173,7 +171,8 @@ jobs:
           echo 'Edit ssh_config.d:'
           cat << EOF | sudo tee -a /etc/ssh/ssh_config.d/100-linux-builder.conf
           Host linux-builder
-            Hostname localhost
+            Hostname linux-builder
+            User builder
             HostKeyAlias linux-builder
             Port 31022
           EOF
