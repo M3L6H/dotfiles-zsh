@@ -168,7 +168,7 @@ jobs:
           cat ~/.config/nix/nix.conf
 
           # Pre-accept linux-builder SSH host key
-          sudo ssh-keyscan -t ed25519 -p 31022 linux-builder >> /etc/ssh/ssh_known_hosts || echo "Failed to scan linux-builder host key"
+          sudo ssh-keyscan -t ed25519 -p 31022 linux-builder | sudo tee /etc/ssh/ssh_known_hosts || echo "Failed to scan linux-builder host key"
 
           # Allow Nix to connect to remote builder on port 31022
           echo 'Edit ssh_config.d:'
@@ -184,12 +184,15 @@ jobs:
           EOF
 
           # Restart the ssh daemon
-          sudo systemctl restart sshd.service && echo 'Successfully restarted ssh daemon'
+          sudo launchctl kickstart -k system/com.openssh.sshd && echo 'Successfully restarted sshd'
 
           # Verify SSH configuration
           echo 'Verify ssh configuration:'
           sudo cat /etc/ssh/ssh_config.d/100-linux-builder.conf
-          sudo ssh -v -o StrictHostKeyChecking=no builder@linux-builder whoami || echo "SSH to linux-builder failed"
+          if ! sudo ssh -v -o StrictHostKeyChecking=no builder@linux-builder whoami; then
+            echo "SSH to linux-builder failed"
+            exit 1
+          fi
 
           # Restart Nix daemon
           sudo launchctl kickstart -k system/org.nixos.nix-daemon && echo 'Successfully restarted nix daemon'
