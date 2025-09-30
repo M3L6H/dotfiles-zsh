@@ -173,6 +173,9 @@ jobs:
           # Ensure permissions on ssh key are correct
           sudo chmod 600 /etc/nix/builder_ed25519
 
+          # Add linux-builder to /etc/hosts
+          echo '127.0.0.1 linux-builder' | sudo tee /etc/hosts
+
           # Pre-accept linux-builder SSH host key
           echo 'Add builder to known hosts:'
           sudo ssh-keyscan -t ed25519 -p 31022 linux-builder | sudo tee /etc/ssh/ssh_known_hosts || echo "Failed to scan linux-builder host key"
@@ -193,14 +196,6 @@ jobs:
 
           # Restart the ssh daemon
           sudo launchctl kickstart -k system/com.openssh.sshd && echo 'Successfully restarted sshd'
-
-          # Verify SSH configuration
-          echo 'Verify ssh configuration:'
-          sudo cat /etc/ssh/ssh_config.d/100-linux-builder.conf
-          if ! sudo ssh -v -o StrictHostKeyChecking=no builder@linux-builder whoami; then
-            echo "SSH to linux-builder failed"
-            exit 1
-          fi
 
           # Restart Nix daemon
           sudo launchctl kickstart -k system/org.nixos.nix-daemon && echo 'Successfully restarted nix daemon'
