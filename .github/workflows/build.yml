@@ -157,31 +157,31 @@ jobs:
             run nix-darwin -- switch --flake .
 
           # Print builders
+          echo '>>> Builders:'
           cat /etc/nix/machines
 
           # Explicitly configure the linux-builder in nix.conf
           mkdir -p ~/.config/nix
-          cat << EOF >> ~/.config/nix/nix.conf
+          echo '>>> Nix conf:'
+          cat << EOF | tee ~/.config/nix/nix.conf
           builders = ssh-ng://builder@linux-builder ${{ matrix.arch }}-linux /etc/nix/builder_ed25519 1 1 kvm,benchmark,big-parallel - c3NoLWVkMjU1MTkgQUFBQUMzTnphQzFsWkRJMU5URTVBQUFBSUpCV2N4Yi9CbGFxdDFhdU90RStGOFFVV3JVb3RpQzVxQkorVXVFV2RWQ2Igcm9vdEBuaXhvcwo=
           builders-use-substitutes = true
           trusted-users = root $(whoami)
           EOF
 
-          echo 'Nix conf:'
-          cat ~/.config/nix/nix.conf
-
           # Ensure permissions on ssh key are correct
           sudo chmod 600 /etc/nix/builder_ed25519
 
           # Add linux-builder to /etc/hosts
+          echo '>>> Update /etc/hosts'
           echo '127.0.0.1 linux-builder' | sudo tee /etc/hosts
 
           # Pre-accept linux-builder SSH host key
-          echo 'Add builder to known hosts:'
-          sudo ssh-keyscan -t ed25519 -p 31022 linux-builder | sudo tee /etc/ssh/ssh_known_hosts || echo "Failed to scan linux-builder host key"
+          echo '>>> Add builder to known hosts:'
+          sudo ssh-keyscan -v -t ed25519 -p 31022 linux-builder | sudo tee /etc/ssh/ssh_known_hosts
 
           # Allow Nix to connect to remote builder on port 31022
-          echo 'Edit ssh_config.d:'
+          echo '>>> Edit ssh_config.d:'
           sudo mkdir -p /etc/ssh/ssh_config.d
           cat << EOF | sudo tee /etc/ssh/ssh_config.d/100-linux-builder.conf
           Host linux-builder
@@ -195,14 +195,20 @@ jobs:
           EOF
 
           # Restart the ssh daemon
-          sudo launchctl kickstart -k system/com.openssh.sshd && echo 'Successfully restarted sshd'
+          sudo launchctl kickstart -k system/com.openssh.sshd &&
+            echo 'Successfully restarted sshd'
 
           # Restart Nix daemon
-          sudo launchctl kickstart -k system/org.nixos.nix-daemon && echo 'Successfully restarted nix daemon'
+          sudo launchctl kickstart -k system/org.nixos.nix-daemon &&
+            echo 'Successfully restarted nix daemon'
 
           # Verify linux-builder is running
-          echo 'org.nixos.linux-builder:'
+          echo '>>> org.nixos.linux-builder:'
           sudo launchctl list org.nixos.linux-builder
+
+          # Print linux-builder logs
+          echo '>>> Linux Builder logs:'
+          cat /var/log/darwin-builder.log
       - name: verify-nix-config
         if: ${{ matrix.os == 'darwin' }}
         run: |-

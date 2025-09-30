@@ -27,7 +27,7 @@
             virtualisation = {
               host.pkgs = pkgs;
               darwin-builder.workingDirectory = "/var/lib/darwin-builder";
-              darwin-builder.hostPort = 22;
+              darwin-builder.hostPort = 31022;
             };
           }
         ];
