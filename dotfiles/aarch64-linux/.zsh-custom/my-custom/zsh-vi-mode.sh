@@ -3,11 +3,6 @@
 copy='wl-copy'
 paste='wl-paste'
 
-if ! which "$copy"; then
-  copy='pbcopy'
-  paste='pbpaste'
-fi
-
 my_zvm_vi_yank() {
   zvm_vi_yank
   echo -en "$CUTBUFFER" | "$copy"
