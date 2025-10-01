@@ -24,11 +24,16 @@
       ...
     }@inputs:
     let
-      systems = [ "x86_64-linux" ];
+      systems = [
+        "aarch64-darwin"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "x86_64-linux"
+      ];
 
       custom = ".zsh-custom";
       pname = "zsh";
-      version = "0.1.0";
+      version = "0.1.1";
 
       homeModule = import ./modules {
         inherit custom pname;
@@ -40,28 +45,36 @@
       inherit systems;
 
       perSystem =
-        { pkgs, ... }:
         {
-          checks."m3l6h-${pname}-test" =
+          pkgs,
+          ...
+        }@args:
+        rec {
+          packages."m3l6h-${pname}-build-dotfiles" =
             let
               module = homeModule;
-              test = import ./tests/default.test.nix {
-                inherit
-                  pname
-                  pkgs
-                  home-manager
-                  module
-                  impermanenceModule
-                  ;
-              };
+              test = import ./tests/default.test.nix (
+                args
+                // {
+                  inherit
+                    pname
+                    home-manager
+                    module
+                    impermanenceModule
+                    ;
+                }
+              );
             in
+            test.driver;
+
+          checks."m3l6h-${pname}-test" =
             pkgs.runCommand "m3l6h-${pname}-test-run"
               {
-                nativeBuildInputs = [ test.driver ];
+                nativeBuildInputs = [ packages."m3l6h-${pname}-build-dotfiles" ];
               }
               ''
                 touch $out  # Create an empty output file to satisfy Nix
-                ${test.driver}/bin/nixos-test-driver
+                ${packages."m3l6h-${pname}-build-dotfiles"}/bin/nixos-test-driver
               '';
         };
 

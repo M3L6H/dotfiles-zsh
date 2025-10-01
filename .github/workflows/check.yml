@@ -1,6 +1,9 @@
 name: check-dotfiles-zsh
 
 on:
+  issue_comment:
+    types:
+      - created
   pull_request:
   push:
     branches:
@@ -28,4 +31,3 @@ jobs:
           nix \
             --option access-tokens 'github.com=${{ steps.generate-token.outputs.token }}' \
             flake check -v -L
-

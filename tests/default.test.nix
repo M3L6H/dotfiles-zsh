@@ -1,9 +1,10 @@
 {
   home-manager,
-  module,
   impermanenceModule,
+  module,
   pname,
   pkgs,
+  system,
   ...
 }:
 let
@@ -84,6 +85,9 @@ pkgs.testers.runNixOSTest {
     # Copy files for output
     machine.copy_from_vm("/home/${username}/.zshrc", "output")
     machine.copy_from_vm("/home/${username}/.zshenv", "output")
-    machine.copy_from_vm("/home/${username}/.zsh-custom", "output")
+    machine.copy_from_vm(
+        "/home/${username}/.zsh-custom/my-custom",
+        "output/.zsh-custom"
+    )
   '';
 }
