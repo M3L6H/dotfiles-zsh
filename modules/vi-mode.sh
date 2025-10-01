@@ -1,50 +1,54 @@
 # Inspired by https://github.com/jeffreytse/zsh-vi-mode/issues/19#issuecomment-1915625381
+
+copy='wl-copy'
+paste='wl-paste'
+
 my_zvm_vi_yank() {
   zvm_vi_yank
-  echo -en "$CUTBUFFER" | wl-copy
+  echo -en "$CUTBUFFER" | "$copy"
 }
 
 my_zvm_vi_delete() {
   zvm_vi_delete
-  echo -en "$CUTBUFFER" | wl-copy
+  echo -en "$CUTBUFFER" | "$copy"
 }
 
 my_zvm_vi_change() {
   zvm_vi_change
-  echo -en "$CUTBUFFER" | wl-copy
+  echo -en "$CUTBUFFER" | "$copy"
 }
 
 my_zvm_vi_change_eol() {
   zvm_vi_change_eol
-  echo -en "$CUTBUFFER" | wl-copy
+  echo -en "$CUTBUFFER" | "$copy"
 }
 
 my_zvm_vi_substitute() {
   zvm_vi_substitute
-  echo -en "$CUTBUFFER" | wl-copy
+  echo -en "$CUTBUFFER" | "$copy"
 }
 
 my_zvm_vi_subsitute_whole_line() {
   zvm_vi_subsitute_whole_line
-  echo -en "$CUTBUFFER" | wl-copy
+  echo -en "$CUTBUFFER" | "$copy"
 }
 
 my_zvm_vi_put_after() {
-  CUTBUFFER="$(wl-paste)"
+  CUTBUFFER="$("$paste")"
   zvm_vi_put_after
   zvm_highlight clear
 }
 
 my_zvm_vi_put_before() {
-  CUTBUFFER="$(wl-paste)"
+  CUTBUFFER="$("$paste")"
   zvm_vi_put_before
   zvm_highlight clear
 }
 
 my_zvm_vi_replace_selection() {
-  CUTBUFFER="$(wl-paste)"
+  CUTBUFFER="$("$paste")"
   zvm_vi_replace_selection
-  echo -en "$CUTBUFFER" | wl-copy
+  echo -en "$CUTBUFFER" | "$copy"
 }
 
 zvm_after_lazy_keybindings() {
