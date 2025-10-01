@@ -8,14 +8,17 @@ Provides both a home-manager module and dotfiles for easy consumption.
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**
 
-- [features](#features)
+- [dependencies](#dependencies)
 - [development](#development)
   - [dotfiles](#dotfiles)
   - [testing](#testing)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-## features
+## dependencies
+
+The following dependencies are required to be installed for the dotfiles to work.
+If using the included flake, they will be installed automatically.
 
 - [oh my zsh](https://ohmyz.sh)
 - [starship prompt](https://starship.rs)
@@ -31,10 +34,10 @@ All modules have been defined in the `modules/` folder.
 Generate dotfiles with:
 
 ```sh
-nix build .#packages.x86_64-linux.m3l6h-zsh-build-dotfiles
-./result/bin/nixos-test-drive
-./scripts/sanitize-dotfiles.sh
+./scripts/generate-dotfiles.sh
 ```
+
+The generated files can be found in the `output/` directory.
 
 ### testing
 
@@ -54,5 +57,4 @@ Perform interactive testing with:
 
 ```sh
 nix build .#checks.x86_64-linux.m3l6h-zsh-test.driverInteractive
-
 ```

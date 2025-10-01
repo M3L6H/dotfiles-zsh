@@ -13,6 +13,4 @@ find "$directory" -type f -print0 | while IFS= read -r -d '' f; do
     perl -i -pe 's|^.*/hm-session-vars.sh.*$||' "$f"
 
     echo "Sanitized: ${f}"
-done
-
-echo "Sanitized all files in: ${directory}"
+done && echo "Sanitized all files in: ${directory}"
