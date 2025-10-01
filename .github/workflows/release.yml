@@ -1,5 +1,4 @@
 name: release-dotfiles-zsh
-
 on:
   push:
     tags:
@@ -7,7 +6,6 @@ on:
       - "!v*.*.*-*" # Ignore prerelease tags
   schedule:
     - cron: '3 6 * * 5' # Run weekly on Fridays
-
 jobs:
   release-dotfiles:
     name: release dotfiles
@@ -57,7 +55,7 @@ jobs:
           echo "TAG=${tag}" >> "$GITHUB_ENV"
           echo "VERSION=${version}" >> "$GITHUB_ENV"
 
-          for sys in 'x86_64-linux' 'x86_64-darwin'; do
+          for sys in 'x86_64-linux' 'x86_64-darwin' 'aarch64-linux' 'aarch64-darwin'; do
             tar czf "dotfiles-zsh-${version}-${sys}.tar.gz" -C "dotfiles/${sys}" .
           done
 
@@ -85,4 +83,3 @@ jobs:
           name: "dotfiles-zsh ${{ github.event_name == 'push' && env.TAG || env.VERSION }}"
           token: ${{ steps.generate-token.outputs.token }}
           tag_name: ${{ github.event_name == 'push' && env.TAG || env.VERSION }}
-
