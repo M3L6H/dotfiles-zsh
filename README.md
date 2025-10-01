@@ -4,6 +4,8 @@ Nix-based repository containing my zsh configuration.
 
 Provides both a home-manager module and dotfiles for easy consumption.
 
+Latest release can be found [here](https://github.com/M3L6H/dotfiles-zsh/releases/latest).
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**
@@ -12,6 +14,7 @@ Provides both a home-manager module and dotfiles for easy consumption.
 - [development](#development)
   - [dotfiles](#dotfiles)
   - [testing](#testing)
+  - [release](#release)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -61,3 +64,22 @@ Perform interactive testing with:
 ```sh
 nix build .#checks.x86_64-linux.m3l6h-zsh-test.driverInteractive
 ```
+
+### release
+
+Ensure tag signing is enabled:
+
+```sh
+git config --global tag.gpgSign true
+```
+
+Initiate a release cut by running the following:
+
+```sh
+git tag -a v<version>
+```
+
+Push the tags to initiate a release cut.
+
+\`\`sh
+git push origin --tags

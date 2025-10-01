@@ -2,6 +2,17 @@
 
 # Changelog
 
+## 0.2.0
+
+### Added
+
+- aliases
+- arm64 platforms
+
+### Fixed
+
+- darwin copy/paste configuration for zsh-vi-mode
+
 ## 0.1.1
 
 ### Fixed
