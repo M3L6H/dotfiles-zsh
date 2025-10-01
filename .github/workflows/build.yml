@@ -163,6 +163,12 @@ jobs:
           echo '>>> Builders:'
           cat /etc/nix/machines
 
+          # Restart linux builder
+          sudo lsof -i :31022
+          sudo launchctl kickstart -k system/org.nixos.linux-builder &&
+            echo '>>> Successfully restarted linux-builder'
+          sudo lsof -i :31022
+
           # Explicitly configure the linux-builder in nix.conf
           mkdir -p ~/.config/nix
           echo '>>> Nix conf:'
@@ -178,11 +184,7 @@ jobs:
           # Add linux-builder to /etc/hosts
           echo '>>> Update /etc/hosts'
           echo '127.0.0.1 linux-builder' | sudo tee /etc/hosts
-
-          # Pre-accept linux-builder SSH host key
-          echo '>>> Add builder to known hosts:'
-          sudo ssh-keyscan -v -t ed25519 -p 31022 linux-builder | sudo tee /etc/ssh/ssh_known_hosts
-
+          
           # Allow Nix to connect to remote builder on port 31022
           echo '>>> Edit ssh_config.d:'
           sudo mkdir -p /etc/ssh/ssh_config.d
@@ -197,13 +199,15 @@ jobs:
             UserKnownHostsFile /etc/ssh/ssh_known_hosts
           EOF
 
+          # Pre-accept linux-builder SSH host key
+          echo '>>> Add builder to known hosts:'
+          sudo ssh-keyscan -vvv -t ed25519 -p 31022 linux-builder | sudo tee /etc/ssh/ssh_known_hosts
+
           # Restart the ssh daemon
           sudo launchctl kickstart -k system/com.openssh.sshd &&
             echo 'Successfully restarted sshd'
 
-          # Restart Nix daemon
-          sudo launchctl kickstart -k system/org.nixos.nix-daemon &&
-            echo 'Successfully restarted nix daemon'
+          p
 
           # Verify linux-builder is running
           echo '>>> org.nixos.linux-builder:'
