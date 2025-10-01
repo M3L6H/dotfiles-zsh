@@ -148,7 +148,7 @@ jobs:
           mkdir output
           nix \
             --option access-tokens 'github.com=${{ steps.generate-token.outputs.token }}' \
-            build .#packages.${{ matrix.arch }}-${{ matrix.os }}.m3l6h-zsh-build-dotfiles -v -L
+            build .#packages.${{ matrix.arch }}-linux.m3l6h-zsh-build-dotfiles -v -L
           ls result
           ./result/bin/nixos-test-driver
       - name: sanitize-dotfiles
