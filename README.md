@@ -1,4 +1,9 @@
-# dotfiles-zsh
+<h1>
+  dotfiles-zsh
+  <img align="right" alt="GitHub Release" src="https://img.shields.io/github/v/release/m3l6h/dotfiles-zsh">
+  <img align="right" alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/m3l6h/dotfiles-zsh/.github%2Fworkflows%2Fcheck.yml?branch=main&label=check">
+  <img align="right" alt="GitHub License" src="https://img.shields.io/github/license/m3l6h/dotfiles-zsh">
+</h1>
 
 Nix-based repository containing my zsh configuration.
 
