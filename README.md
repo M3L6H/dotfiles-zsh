@@ -73,13 +73,8 @@ Ensure tag signing is enabled:
 git config --global tag.gpgSign true
 ```
 
-Initiate a release cut by running the following:
+Run the release cut script:
 
 ```sh
-git tag -a v<version>
+./scripts/release-dotfiles.sh v<version>
 ```
-
-Push the tags to initiate a release cut.
-
-\`\`sh
-git push origin --tags

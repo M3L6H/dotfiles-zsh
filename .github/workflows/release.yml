@@ -42,10 +42,6 @@ jobs:
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
       - name: checkout
         uses: actions/checkout@v5.0.0
-      - name: install-nix
-        uses: DeterminateSystems/nix-installer-action@v20
-        with:
-          github-token: ${{ steps.generate-token.outputs.token }}
       - name: bundle-artifact
         run: |-
           d="$(date -u +%Y-%m-%d)"
