@@ -143,6 +143,7 @@ jobs:
           github-token: ${{ steps.generate-token.outputs.token }}
       - name: configure-nix-darwin
         if: ${{ matrix.os == 'darwin' }} # Only for macOS runners
+        shell: bash {0}
         working-directory: darwin
         run: |-
           # Make directory for logs
@@ -164,10 +165,11 @@ jobs:
           cat /etc/nix/machines
 
           # Restart linux builder
-          sudo lsof -i :31022
+          echo '>>> Restart builder:'
+          lsof -i :31022
           sudo launchctl kickstart -k system/org.nixos.linux-builder &&
             echo '>>> Successfully restarted linux-builder'
-          sudo lsof -i :31022
+          lsof -i :31022
 
           # Explicitly configure the linux-builder in nix.conf
           mkdir -p ~/.config/nix
