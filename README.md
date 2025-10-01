@@ -20,6 +20,9 @@ Provides both a home-manager module and dotfiles for easy consumption.
 The following dependencies are required to be installed for the dotfiles to work.
 If using the included flake, they will be installed automatically.
 
+- a clipboard program:
+  - pbcopy on mac
+  - [wl-clipboard](https://github.com/bugaevc/wl-clipboard) on Wayland
 - [oh my zsh](https://ohmyz.sh)
 - [starship prompt](https://starship.rs)
 - [zoxide](https://github.com/ajeetdsouza/zoxide)

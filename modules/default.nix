@@ -34,8 +34,9 @@ with lib;
   };
 
   imports = [
-    (import ./vi-mode.nix flake-args)
+    (import ./aliases.nix flake-args)
     (import ./starship.nix flake-args)
+    (import ./vi-mode.nix flake-args)
     (import ./zoxide.nix flake-args)
   ];
 
