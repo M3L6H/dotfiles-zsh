@@ -3,8 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    darwin.url = "github:nix-darwin/nix-darwin/master";
-    darwin.inputs.nixpkgs.follows = "nixpkgs";
+    darwin = {
+      url = "github:nix-darwin/nix-darwin/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
