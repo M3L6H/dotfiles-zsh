@@ -145,16 +145,9 @@ jobs:
         id: build
         run: |-
           rm -rf 'dotfiles/${{ matrix.arch }}-${{ matrix.os }}'
-          mkdir output
-          nix \
+          ./scripts/generate-dotfiles.sh '${{ matrix.arch }}-${{ matrix.os }}' -- \
             --option access-tokens 'github.com=${{ steps.generate-token.outputs.token }}' \
-            build .#packages.${{ matrix.arch }}-linux.m3l6h-zsh-build-dotfiles -v -L
-          ls result
-          ./result/bin/nixos-test-driver
-      - name: sanitize-dotfiles
-        run: |-
-          chmod +x scripts/sanitize-dotfiles.sh
-          ./scripts/sanitize-dotfiles.sh output '${{ matrix.arch }}-${{ matrix.os }}'
+            -v -L
           mv output 'dotfiles/${{ matrix.arch }}-${{ matrix.os }}'
 
           echo "DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
