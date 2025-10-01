@@ -3,11 +3,11 @@ for profile in ${(z)NIX_PROFILES}; do
   fpath+=($profile/share/zsh/site-functions $profile/share/zsh/$ZSH_VERSION/functions $profile/share/zsh/vendor-completions)
 done
 
-HELPDIR="/nix/store/6lrbkxnpym1z8lqrrpg59bwnddxfdc52-zsh-5.9/share/zsh/$ZSH_VERSION/help"
+HELPDIR="$(dirname "$(dirname "$(which zsh)")")/share/zsh/$ZSH_VERSION/help"
 
-eval "$(/nix/store/wy0ki878xml2dvghl61xr0d3pi07xch1-zoxide-0.9.8/bin/zoxide init zsh )"
+eval "$(zoxide init zsh )"
 
-source /nix/store/7103y0q8n75aj611pcfv48sv3nfj2gzd-zsh-autosuggestions-0.7.1/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $(dirname "$(dirname "$(which zsh-autosuggestions)")")/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 ZSH_AUTOSUGGEST_STRATEGY=(history)
 
 
@@ -24,7 +24,7 @@ source $ZSH/oh-my-zsh.sh
 HISTSIZE="10000"
 SAVEHIST="10000"
 
-HISTFILE="/home/testUser/.zsh_history"
+HISTFILE="${HOME}/.zsh_history"
 mkdir -p "$(dirname "$HISTFILE")"
 
 setopt HIST_FCNTL_LOCK
@@ -52,5 +52,5 @@ nix() {
 
 
 if [[ $TERM != "dumb" ]]; then
-  eval "$(/nix/store/6hq21mqkmdm1ds9974w9xw00blym6fh5-starship-1.23.0/bin/starship init zsh)"
+  eval "$(starship init zsh)"
 fi
