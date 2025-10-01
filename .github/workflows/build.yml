@@ -166,10 +166,15 @@ jobs:
 
           # Restart linux builder
           echo '>>> Restart builder:'
-          lsof -i :31022
+          sudo lsof -i :31022
           sudo launchctl kickstart -k system/org.nixos.linux-builder &&
             echo '>>> Successfully restarted linux-builder'
-          lsof -i :31022
+          sudo lsof -i :31022
+
+          # Verify linux-builder is running
+          echo '>>> org.nixos.linux-builder:'
+          sudo launchctl list org.nixos.linux-builder
+          cat /var/log/darwin-builder.log
 
           # Explicitly configure the linux-builder in nix.conf
           mkdir -p ~/.config/nix
@@ -208,12 +213,6 @@ jobs:
           # Restart the ssh daemon
           sudo launchctl kickstart -k system/com.openssh.sshd &&
             echo 'Successfully restarted sshd'
-
-          p
-
-          # Verify linux-builder is running
-          echo '>>> org.nixos.linux-builder:'
-          sudo launchctl list org.nixos.linux-builder
       - name: verify-nix-config
         if: ${{ matrix.os == 'darwin' }}
         run: |-
