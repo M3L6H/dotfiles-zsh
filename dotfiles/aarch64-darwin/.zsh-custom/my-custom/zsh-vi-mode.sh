@@ -1,12 +1,7 @@
 # Inspired by https://github.com/jeffreytse/zsh-vi-mode/issues/19#issuecomment-1915625381
 
-copy='wl-copy'
-paste='wl-paste'
-
-if ! which "$copy"; then
-  copy='pbcopy'
-  paste='pbpaste'
-fi
+copy='pbcopy'
+paste='pbpaste'
 
 my_zvm_vi_yank() {
   zvm_vi_yank
