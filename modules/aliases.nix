@@ -19,12 +19,13 @@ with lib;
       parent = config.m3l6h.${pname};
       enable = parent.enable;
       cfg = parent.aliases;
+      file = "my-custom/aliases.zsh";
     in
     mkIf (enable && cfg.enable) {
-      home.file."${custom}/my-custom/aliases.zsh".source = ./aliases.zsh;
+      home.file."${custom}/${file}".source = ./aliases.zsh;
 
       programs.zsh.initContent = ''
-        source $HOME/${custom}/my-custom/aliases.sh
+        source $HOME/${custom}/${file}
       '';
     };
 }
