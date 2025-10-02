@@ -2,6 +2,13 @@
 
 # Changelog
 
+## 0.3.0
+
+### Added
+
+- env extra to default module
+- git status to aliases
+
 ## 0.2.0
 
 ### Added
