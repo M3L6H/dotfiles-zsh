@@ -8,7 +8,8 @@ if [[ -z "$__HM_ZSH_SESS_VARS_SOURCED" ]]; then
 fi
 
 ZVM_VI_SURROUND_BINDKEY='s-prefix'
-export ZOXIDE_CMD_OVERRIDE='cd'
+ZOXIDE_CMD_OVERRIDE='cd'
+
 
 ZSH="$(dirname "$(dirname "$(which oh-my-zsh)")")/share/oh-my-zsh";
 ZSH_CACHE_DIR="${HOME}/.cache/oh-my-zsh";

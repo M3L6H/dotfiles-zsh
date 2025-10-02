@@ -1,6 +1,7 @@
 alias gds='git diff --staged'
 alias gpoh='git push -u origin HEAD'
 alias grboh='git rebase origin/$(git branch --show-current)'
+alias gs='git status'
 alias src='omz reload'
 alias v='nvim'
 alias vi='nvim'

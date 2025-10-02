@@ -39,6 +39,8 @@ setopt SHARE_HISTORY
 unsetopt EXTENDED_HISTORY
 
 
+source $HOME/.zsh-custom/my-custom/aliases.sh
+
 source $HOME/.zsh-custom/my-custom/zsh-vi-mode.sh
 nix() {
   if [ "$1" = 'develop' ]; then

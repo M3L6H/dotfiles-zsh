@@ -22,5 +22,9 @@ with lib;
     in
     mkIf (enable && cfg.enable) {
       home.file."${custom}/my-custom/aliases.zsh".source = ./aliases.zsh;
+
+      programs.zsh.initContent = ''
+        source $HOME/${custom}/my-custom/aliases.sh
+      '';
     };
 }
