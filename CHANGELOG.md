@@ -2,6 +2,16 @@
 
 # Changelog
 
+## 0.4.0
+
+### Added
+
+- F-Sy-H for syntax highlighting
+
+### Fixed
+
+- alias file path in zshrc
+
 ## 0.3.1
 
 ### Fixed

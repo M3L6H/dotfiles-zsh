@@ -4,7 +4,6 @@
   module,
   pname,
   pkgs,
-  system,
   ...
 }:
 let
@@ -65,6 +64,10 @@ pkgs.testers.runNixOSTest {
     # Switch to the test user and verify basic zsh functionality
     machine.succeed("su - ${username} -c 'zsh -c \"echo $ZSH_VERSION\"'")
 
+    # Check for aliases
+    machine.succeed("su - testUser -c 'zsh -c \"source .zshrc && alias gs\"'")
+    machine.succeed("su - testUser -c 'zsh -c \"source .zshrc && alias gds\"'")
+
     # Check if oh-my-zsh is loaded (e.g., via env var)
     machine.succeed("su - ${username} -c 'zsh -c \"echo $ZSH\"'")
 
@@ -79,6 +82,9 @@ pkgs.testers.runNixOSTest {
 
     # Check for custom directory existence
     machine.succeed("su - ${username} -c 'ls /home/${username}/.zsh-custom'")
+
+    # Check for F-Sy-H
+    machine.succeed("su - testUser -c 'zsh -c \"source .zshrc && fast-theme -l\"'")
 
     print("All tests passed!")
 
