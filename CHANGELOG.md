@@ -4,6 +4,10 @@
 
 ## 0.4.0
 
+### Added
+
+- F-Sy-H for syntax highlighting
+
 ### Fixed
 
 - alias file path in zshrc
