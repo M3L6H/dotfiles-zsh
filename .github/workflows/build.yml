@@ -146,7 +146,8 @@ jobs:
       - name: build-dotfiles
         id: build
         run: |-
-          rm -rf 'dotfiles/${{ matrix.arch }}-${{ matrix.os }}'
+          # Upload step will ignore output folder, so we remove .gitignore to avoid that
+          rm '.gitignore'
           ./scripts/generate-dotfiles.sh '${{ matrix.arch }}-${{ matrix.os }}' -- \
             --option access-tokens 'github.com=${{ steps.generate-token.outputs.token }}' \
             -v -L
