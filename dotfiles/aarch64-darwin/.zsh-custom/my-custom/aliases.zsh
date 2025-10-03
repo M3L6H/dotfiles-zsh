@@ -1,3 +1,4 @@
+alias debug-flake='nix repl --expr "builtins.getFlake \"$PWD\""'
 alias gds='git diff --staged'
 alias gpoh='git push -u origin HEAD'
 alias grboh='git rebase origin/$(git branch --show-current)'
