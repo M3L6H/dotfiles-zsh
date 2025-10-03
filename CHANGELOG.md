@@ -7,6 +7,7 @@
 ### Added
 
 - F-Sy-H for syntax highlighting
+- debug-flake alias
 
 ### Fixed
 
