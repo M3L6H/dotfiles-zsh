@@ -58,6 +58,9 @@ pkgs.testers.runNixOSTest {
 
     print("Machines started")
 
+    def test(cmd):
+        machine.succeed(f"su - testUser -c 'zsh -c \"source .zshrc && {cmd}\"'")
+
     # Wait for boot and login availability
     machine.wait_for_unit("multi-user.target")
 
@@ -65,8 +68,11 @@ pkgs.testers.runNixOSTest {
     machine.succeed("su - ${username} -c 'zsh -c \"echo $ZSH_VERSION\"'")
 
     # Check for aliases
-    machine.succeed("su - testUser -c 'zsh -c \"source .zshrc && alias gs\"'")
-    machine.succeed("su - testUser -c 'zsh -c \"source .zshrc && alias gds\"'")
+    test("alias gs")
+    test("alias gds")
+
+    # Check for env function
+    test("export password=abc && env | grep \\\"password=***\\\"")
 
     # Check if oh-my-zsh is loaded (e.g., via env var)
     machine.succeed("su - ${username} -c 'zsh -c \"echo $ZSH\"'")
@@ -84,7 +90,7 @@ pkgs.testers.runNixOSTest {
     machine.succeed("su - ${username} -c 'ls /home/${username}/.zsh-custom'")
 
     # Check for F-Sy-H
-    machine.succeed("su - testUser -c 'zsh -c \"source .zshrc && fast-theme -l\"'")
+    test("fast-theme -l")
 
     print("All tests passed!")
 

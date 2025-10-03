@@ -39,6 +39,8 @@ setopt SHARE_HISTORY
 unsetopt EXTENDED_HISTORY
 
 
+source $HOME/.zsh-custom/my-custom/functions.zsh
+
 source $HOME/.zsh-custom/my-custom/aliases.zsh
 
 source $HOME/.zsh-custom/my-custom/zsh-vi-mode.sh

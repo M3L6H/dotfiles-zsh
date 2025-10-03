@@ -8,6 +8,7 @@
 
 - F-Sy-H for syntax highlighting
 - debug-flake alias
+- functions
 
 ### Fixed
 

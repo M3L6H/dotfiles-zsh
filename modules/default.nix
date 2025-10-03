@@ -44,6 +44,7 @@ with lib;
   imports = [
     (import ./aliases.nix flake-args)
     (import ./f-sy-h.nix flake-args)
+    (import ./functions.nix flake-args)
     (import ./starship.nix flake-args)
     (import ./vi-mode.nix flake-args)
     (import ./zoxide.nix flake-args)
