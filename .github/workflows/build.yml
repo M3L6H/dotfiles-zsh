@@ -151,13 +151,13 @@ jobs:
           ./scripts/generate-dotfiles.sh '${{ matrix.arch }}-${{ matrix.os }}' -- \
             --option access-tokens 'github.com=${{ steps.generate-token.outputs.token }}' \
             -v -L
-          ls -R
       - name: upload-dotfiles
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.arch }}-${{ matrix.os }}
           path: output/
           if-no-files-found: error
+          include-hidden-files: true
       - name: update-check
         if: always()
         uses: LouisBrunner/checks-action@v2.0.0
