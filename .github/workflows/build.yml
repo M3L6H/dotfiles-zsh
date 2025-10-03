@@ -79,6 +79,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
+    outputs:
+      head_ref: ${{ steps.pr.outputs.head_ref }}
     name: build-${{ matrix.arch }}-${{ matrix.os }}
     runs-on: ${{ matrix.runner }}
     permissions:
@@ -148,43 +150,11 @@ jobs:
           ./scripts/generate-dotfiles.sh '${{ matrix.arch }}-${{ matrix.os }}' -- \
             --option access-tokens 'github.com=${{ steps.generate-token.outputs.token }}' \
             -v -L
-          mv output 'dotfiles/${{ matrix.arch }}-${{ matrix.os }}'
-
-          echo "DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
-      - name: import-gpg-key
-        id: import-gpg
-        uses: crazy-max/ghaction-import-gpg@v6
+      - name: upload-dotfiles
+        uses: actions/upload-artifact@v4
         with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
-          git_user_signingkey: true
-          git_commit_gpgsign: true
-      - name: git-pull
-        id: pull
-        run: |-
-          git pull
-          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-      - name: commit-changes
-        id: commit
-        uses: stefanzweifel/git-auto-commit-action@v6
-        with:
-          commit_message: "build(dotfiles): ${{ matrix.arch }}-${{ matrix.os }} - ${{ env.DATE }}"
-          commit_author: "${{ steps.import-gpg.outputs.name }} <${{ steps.import-gpg.outputs.email }}>"
-          commit_user_name: ${{ steps.import-gpg.outputs.name }}
-          commit_user_email: ${{ steps.import-gpg.outputs.email }}
-      - name: set-successful-check
-        uses: LouisBrunner/checks-action@v2.0.0
-        with:
-          sha: ${{ steps.commit.outputs.commit_hash }}
-          token: "${{ steps.generate-token.outputs.token }}"
-          name: "build-${{ matrix.arch }}-${{ matrix.os }}"
-          details_url: "${{ steps.job-url.outputs.url }}"
-          conclusion: success
-          output: |-
-            {
-              "name": "Build ${{ matrix.arch }}-${{ matrix.os }}",
-              "summary": "Finished building dotfiles for `build-${{ matrix.arch }}-${{ matrix.os }}`:\n- ${{ steps.build.conclusion == 'success' && '✅' || '❌' }} build\n- ${{ steps.commit.conclusion == 'success' && '✅' || '❌' }} commit"
-            }
+          name: ${{ matrix.arch }}-${{ matrix.os }}
+          path: output/
       - name: update-check
         if: always()
         uses: LouisBrunner/checks-action@v2.0.0
@@ -197,5 +167,68 @@ jobs:
           output: |-
             {
               "name": "Build ${{ matrix.arch }}-${{ matrix.os }}",
-              "summary": "Finished building dotfiles for `build-${{ matrix.arch }}-${{ matrix.os }}`:\n- ${{ steps.build.conclusion == 'success' && '✅' || '❌' }} build\n- ${{ steps.commit.conclusion == 'success' && '✅' || '❌' }} commit"
+              "summary": "Finished building dotfiles for `build-${{ matrix.arch }}-${{ matrix.os }}`: ✅"
+            }
+  commit:
+    needs: build
+    runs-on: ubuntu-latest
+    outputs:
+      commit_sha: ${{ steps.commit.outputs.commit_hash }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v5.0.0
+        with:
+          ref: ${{ needs.build.outputs.head_ref }}
+          fetch-depth: 0
+      - name: get-date
+        run: |-
+          rm -rf dotfiles
+          echo "DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
+      - name: download-dotfiles
+        uses: actions/download-artifact@v4
+        with:
+          path: ./dotfiles
+      - name: import-gpg-key
+        id: import-gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+      - name: commit-changes
+        id: commit
+        uses: stefanzweifel/git-auto-commit-action@v6
+        with:
+          commit_message: "build(dotfiles): ${{ env.DATE }}"
+          commit_author: "${{ steps.import-gpg.outputs.name }} <${{ steps.import-gpg.outputs.email }}>"
+          commit_user_name: ${{ steps.import-gpg.outputs.name }}
+          commit_user_email: ${{ steps.import-gpg.outputs.email }}
+  check:
+    needs:
+      - matrix
+      - commit
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
+    steps:
+      - name: generate-token
+        uses: actions/create-github-app-token@v2
+        id: generate-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+      - name: set-successful-check
+        uses: LouisBrunner/checks-action@v2.0.0
+        with:
+          sha: ${{ needs.commit.outputs.commit_sha }}
+          token: "${{ steps.generate-token.outputs.token }}"
+          name: "build-${{ matrix.arch }}-${{ matrix.os }}"
+          details_url: "${{ steps.job-url.outputs.url }}"
+          conclusion: success
+          output: |-
+            {
+              "name": "Build ${{ matrix.arch }}-${{ matrix.os }}",
+              "summary": "Finished building dotfiles for `build-${{ matrix.arch }}-${{ matrix.os }}`: ✅"
             }
