@@ -177,13 +177,9 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       commit_sha: ${{ steps.commit.outputs.commit_hash }}
+    permissions:
+      contents: write
     steps:
-      - name: generate-token
-        uses: actions/create-github-app-token@v2
-        id: generate-token
-        with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
       - name: checkout
         uses: actions/checkout@v5.0.0
         with:
@@ -216,6 +212,7 @@ jobs:
   check:
     needs:
       - matrix
+      - build
       - commit
     runs-on: ubuntu-latest
     strategy:
@@ -231,7 +228,7 @@ jobs:
       - name: set-successful-check
         uses: LouisBrunner/checks-action@v2.0.0
         with:
-          sha: ${{ needs.commit.outputs.commit_sha }}
+          sha: ${{ needs.commit.outputs.commit_sha || needs.build.outputs.head_ref }}
           token: "${{ steps.generate-token.outputs.token }}"
           name: "build-${{ matrix.arch }}-${{ matrix.os }}"
           details_url: "${{ steps.job-url.outputs.url }}"
