@@ -172,6 +172,19 @@ jobs:
           commit_author: "${{ steps.import-gpg.outputs.name }} <${{ steps.import-gpg.outputs.email }}>"
           commit_user_name: ${{ steps.import-gpg.outputs.name }}
           commit_user_email: ${{ steps.import-gpg.outputs.email }}
+      - name: set-successful-check
+        uses: LouisBrunner/checks-action@v2.0.0
+        with:
+          sha: ${{ steps.commit.outputs.commit_hash }}
+          token: "${{ steps.generate-token.outputs.token }}"
+          name: "build-${{ matrix.arch }}-${{ matrix.os }}"
+          details_url: "${{ steps.job-url.outputs.url }}"
+          conclusion: success
+          output: |-
+            {
+              "name": "Build ${{ matrix.arch }}-${{ matrix.os }}",
+              "summary": "Finished building dotfiles for `build-${{ matrix.arch }}-${{ matrix.os }}`:\n- ${{ steps.build.conclusion == 'success' && '✅' || '❌' }} build\n- ${{ steps.commit.conclusion == 'success' && '✅' || '❌' }} commit"
+            }
       - name: update-check
         if: always()
         uses: LouisBrunner/checks-action@v2.0.0

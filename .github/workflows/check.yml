@@ -1,10 +1,10 @@
 name: check-dotfiles-zsh
 on:
-  pull_request:
-    paths:
-      - 'flake.*'
-      - 'modules/**'
-      - 'tests/**'
+  workflow_run:
+    workflows:
+      - build-dotfiles-zsh
+    types:
+      - completed
   push:
     branches:
       - main
