@@ -31,7 +31,7 @@
 
       custom = ".zsh-custom";
       pname = "zsh";
-      version = "0.3.1";
+      version = "0.4.0";
 
       homeModule = import ./modules {
         inherit custom pname;
