@@ -184,5 +184,5 @@ jobs:
           output: |-
             {
               "name": "Build ${{ matrix.arch }}-${{ matrix.os }}",
-              "summary": "Finished building dotfiles for `build-${{ matrix.arch }}-${{ matrix.os }}`:\n- ${{ steps.steps.build.conclusion == 'success' && '✅' || '❌' }} build\n- ${{ steps.steps.commit.conclusion == 'success' && '✅' || '❌' }} commit"
+              "summary": "Finished building dotfiles for `build-${{ matrix.arch }}-${{ matrix.os }}`:\n- ${{ steps.build.conclusion == 'success' && '✅' || '❌' }} build\n- ${{ steps.commit.conclusion == 'success' && '✅' || '❌' }} commit"
             }
