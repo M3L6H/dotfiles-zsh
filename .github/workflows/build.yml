@@ -203,7 +203,7 @@ jobs:
           git_commit_gpgsign: true
       - name: commit-changes
         id: commit
-        uses: stefanzweifel/git-auto-commit-action@v6
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "build(dotfiles): ${{ env.DATE }}"
           commit_author: "${{ steps.import-gpg.outputs.name }} <${{ steps.import-gpg.outputs.email }}>"
