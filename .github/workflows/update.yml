@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: install-nix
         uses: DeterminateSystems/determinate-nix-action@v3
       - name: update-flake-lock
