@@ -6,4 +6,5 @@ updates:
       interval: weekly
     commit-message:
       prefix: "build(actions): "
-
+    assignees:
+      - "m3l6h"
