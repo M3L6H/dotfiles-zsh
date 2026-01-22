@@ -34,6 +34,7 @@ If using the included flake, they will be installed automatically.
 - [oh my zsh](https://ohmyz.sh)
 - [starship prompt](https://starship.rs)
 - [zoxide](https://github.com/ajeetdsouza/zoxide)
+- [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md#oh-my-zsh)
 - [zsh-vi-mode](https://github.com/jeffreytse/zsh-vi-mode)
 
 ## development
