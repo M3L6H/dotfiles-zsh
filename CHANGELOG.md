@@ -2,6 +2,12 @@
 
 # Changelog
 
+## 0.4.1
+
+### Fixed
+
+- add ~/.local/bin to PATH
+
 ## 0.4.0
 
 ### Added

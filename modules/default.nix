@@ -93,7 +93,10 @@ with lib;
         history.expireDuplicatesFirst = true;
 
         initContent = concatLines (
-          optionals cfg.vi-mode.enable [
+          [
+            "path=($HOME/.local/bin $path)"
+          ]
+          ++ optionals cfg.vi-mode.enable [
             "source $HOME/${custom}/my-custom/zsh-vi-mode.sh"
           ]
           ++ optionals cfg.overrideNixDevelop [
