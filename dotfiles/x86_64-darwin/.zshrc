@@ -5,8 +5,6 @@ done
 
 HELPDIR="$(dirname "$(dirname "$(which zsh)")")/share/zsh/$ZSH_VERSION/help"
 
-eval "$(zoxide init zsh )"
-
 source $(dirname "$(dirname "$(which zsh-autosuggestions)")")/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 ZSH_AUTOSUGGEST_STRATEGY=(history)
 
@@ -19,6 +17,8 @@ ZSH_CUSTOM="$HOME/.zsh-custom"
 
 source $ZSH/oh-my-zsh.sh
 
+eval "$(zoxide init zsh )"
+
 # History options should be set in .zshrc and after oh-my-zsh sourcing.
 # See https://github.com/nix-community/home-manager/issues/177.
 HISTSIZE="10000"
@@ -28,21 +28,31 @@ HISTFILE="${HOME}/.zsh_history"
 mkdir -p "$(dirname "$HISTFILE")"
 
 setopt HIST_FCNTL_LOCK
-unsetopt APPEND_HISTORY
-setopt HIST_IGNORE_DUPS
-unsetopt HIST_IGNORE_ALL_DUPS
-unsetopt HIST_SAVE_NO_DUPS
-unsetopt HIST_FIND_NO_DUPS
-setopt HIST_IGNORE_SPACE
-setopt HIST_EXPIRE_DUPS_FIRST
-setopt SHARE_HISTORY
-unsetopt EXTENDED_HISTORY
 
+# Enabled history options
+enabled_opts=(
+  HIST_EXPIRE_DUPS_FIRST HIST_IGNORE_DUPS HIST_IGNORE_SPACE SHARE_HISTORY
+)
+for opt in "${enabled_opts[@]}"; do
+  setopt "$opt"
+done
+unset opt enabled_opts
+
+# Disabled history options
+disabled_opts=(
+  APPEND_HISTORY EXTENDED_HISTORY HIST_FIND_NO_DUPS HIST_IGNORE_ALL_DUPS
+  HIST_SAVE_NO_DUPS
+)
+for opt in "${disabled_opts[@]}"; do
+  unsetopt "$opt"
+done
+unset opt disabled_opts
 
 source $HOME/.zsh-custom/my-custom/functions.zsh
 
 source $HOME/.zsh-custom/my-custom/aliases.zsh
 
+path=($HOME/.local/bin $path)
 source $HOME/.zsh-custom/my-custom/zsh-vi-mode.sh
 nix() {
   if [ "$1" = 'develop' ]; then

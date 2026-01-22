@@ -31,13 +31,13 @@
 
       custom = ".zsh-custom";
       pname = "zsh";
-      version = "0.4.0";
+      version = "0.4.1";
 
       homeModule = import ./modules {
         inherit custom pname;
       };
 
-      impermanenceModule = impermanence.homeManagerModules.impermanence;
+      impermanenceModule = impermanence.nixosModules.impermanence;
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
       inherit systems;
