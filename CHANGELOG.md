@@ -2,6 +2,13 @@
 
 # Changelog
 
+## 0.4.2
+
+### Fixed
+
+- add zsh-autosuggestions as a oh-my-zsh plugin
+- initialize zoxide at the end
+
 ## 0.4.1
 
 ### Fixed

@@ -17,7 +17,7 @@ ZSH_CUSTOM="$HOME/.zsh-custom"
 
 source $ZSH/oh-my-zsh.sh
 
-eval "$(zoxide init zsh )"
+
 
 # History options should be set in .zshrc and after oh-my-zsh sourcing.
 # See https://github.com/nix-community/home-manager/issues/177.
@@ -68,3 +68,4 @@ nix() {
 if [[ $TERM != "dumb" ]]; then
   eval "$(starship init zsh)"
 fi
+eval "$(zoxide init zsh )"
