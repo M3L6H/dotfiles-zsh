@@ -52,7 +52,7 @@ jobs:
           echo "VERSION=${version}" >> "$GITHUB_ENV"
 
           for sys in 'x86_64-linux' 'x86_64-darwin' 'aarch64-linux' 'aarch64-darwin'; do
-            tar czf "dotfiles-zsh-${version}-${sys}.tar.gz" -C "dotfiles/${sys}" .
+            tar czf "dotfiles-zsh-${sys}.tar.gz" -C "dotfiles/${sys}" .
           done
 
           awk 'BEGIN{ c = 0; }/^## /{ c = c + 1; }NR > 2{ if (c <= 1) { print; } }' CHANGELOG.md > RELEASE_NOTES.txt
