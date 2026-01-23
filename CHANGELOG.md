@@ -7,6 +7,8 @@
 ### Fixed
 
 - use correct path to .oh-my-zsh on linux
+- move path update to oh-my-zsh extra options
+- export PATH after setting it
 
 ## 0.4.2
 
