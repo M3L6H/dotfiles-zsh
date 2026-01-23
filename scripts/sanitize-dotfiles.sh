@@ -31,6 +31,9 @@ find "$directory" -type f -print0 | while IFS= read -r -d '' f; do
         # Auto suggestions
         perl -i -pe 's|^.*zsh-autosuggestions.*$||g' "$f"
         perl -i -pe 's|plugins=\((.*)\)|plugins=($1 zsh-autosuggestions)|g' "$f"
+
+        # ZSH var
+        perl -i -pe 's|^ZSH=.*$|ZSH="\${HOME}/.oh-my-zsh";|g' "$f"
     fi
 
     echo "Sanitized: ${f}"

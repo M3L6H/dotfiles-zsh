@@ -2,6 +2,12 @@
 
 # Changelog
 
+## 0.4.3
+
+### Fixed
+
+- use correct path to .oh-my-zsh on linux
+
 ## 0.4.2
 
 ### Fixed
