@@ -115,7 +115,7 @@ with lib;
           enable = true;
           custom = "$HOME/${custom}";
           extraConfig = ''
-            path += ($HOME/.local/bin $path)
+            path=($HOME/.local/bin $path)
             export PATH
           '';
           plugins = [
