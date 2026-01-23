@@ -31,6 +31,7 @@ If using the included flake, they will be installed automatically.
 - a clipboard program:
   - pbcopy on mac
   - [wl-clipboard](https://github.com/bugaevc/wl-clipboard) on Wayland
+- [F-Sy-H](https://github.com/z-shell/F-Sy-H?tab=readme-ov-file#oh-my-zsh)
 - [oh my zsh](https://ohmyz.sh)
 - [starship prompt](https://starship.rs)
 - [zoxide](https://github.com/ajeetdsouza/zoxide)

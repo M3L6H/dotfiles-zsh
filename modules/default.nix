@@ -93,10 +93,7 @@ with lib;
         history.expireDuplicatesFirst = true;
 
         initContent = concatLines (
-          [
-            "path=($HOME/.local/bin $path)"
-          ]
-          ++ optionals cfg.vi-mode.enable [
+          optionals cfg.vi-mode.enable [
             "source $HOME/${custom}/my-custom/zsh-vi-mode.sh"
           ]
           ++ optionals cfg.overrideNixDevelop [
@@ -117,6 +114,10 @@ with lib;
         oh-my-zsh = {
           enable = true;
           custom = "$HOME/${custom}";
+          extraConfig = ''
+            path += ($HOME/.local/bin $path)
+            export PATH
+          '';
           plugins = [
             "git"
           ]
