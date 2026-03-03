@@ -2,6 +2,12 @@
 
 # Changelog
 
+## TBD
+
+### Fixed
+
+- use optionalAttrs instead of mkIf for impermanence config
+
 ## 0.4.4
 
 ### Fixed
