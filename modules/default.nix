@@ -73,7 +73,12 @@ with lib;
         autosuggestion.enable = true;
 
         envExtra = concatLines (
-          optionals neovim.enable [
+          [
+            # Ensure proper font display
+            "LC_ALL=en_US.UTF-8"
+            "LANG=en_US.UTF-8"
+          ]
+          ++ optionals neovim.enable [
             "EDITOR='nvim'"
           ]
           ++ optionals tmux.enable [

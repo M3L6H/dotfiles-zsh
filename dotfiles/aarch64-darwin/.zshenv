@@ -7,6 +7,8 @@ if [[ -z "$__HM_ZSH_SESS_VARS_SOURCED" ]]; then
   
 fi
 
+LC_ALL=en_US.UTF-8
+LANG=en_US.UTF-8
 ZVM_VI_SURROUND_BINDKEY='s-prefix'
 ZOXIDE_CMD_OVERRIDE='cd'
 
