@@ -23,7 +23,7 @@ with lib;
     mkIf (enable && cfg.enable) {
       programs.zoxide.enable = true;
 
-      home = mkIf parent.impermanence.enable {
+      home = optionalAttrs parent.impermanence.enable {
         persistence."/persist".directories = [
           ".local/share/zoxide"
         ];
