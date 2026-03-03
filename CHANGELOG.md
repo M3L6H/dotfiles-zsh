@@ -2,6 +2,12 @@
 
 # Changelog
 
+## 0.4.4
+
+### Fixed
+
+- only set persistence if impermanence is enabled
+
 ## 0.4.3
 
 ### Fixed
