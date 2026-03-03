@@ -7,6 +7,7 @@
 ### Fixed
 
 - use optionalAttrs instead of mkIf for impermanence config
+- set LANG and LC_ALL environment variables for proper text rendering
 
 ## 0.4.4
 
