@@ -8,6 +8,7 @@
 
 - use optionalAttrs instead of mkIf for impermanence config
 - set LANG and LC_ALL environment variables for proper text rendering
+- add export to environment vars
 
 ## 0.4.4
 

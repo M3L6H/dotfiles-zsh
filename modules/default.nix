@@ -75,22 +75,22 @@ with lib;
         envExtra = concatLines (
           [
             # Ensure proper font display
-            "LC_ALL=en_US.UTF-8"
-            "LANG=en_US.UTF-8"
+            "export LC_ALL=en_US.UTF-8"
+            "export LANG=en_US.UTF-8"
           ]
           ++ optionals neovim.enable [
-            "EDITOR='nvim'"
+            "expoert EDITOR='nvim'"
           ]
           ++ optionals tmux.enable [
-            "ZSH_TMUX_AUTOSTART=true"
+            "export ZSH_TMUX_AUTOSTART=true"
             # Autoquit can get us locked out of our terminal if our tmux config gets jacked up
-            "ZSH_TMUX_AUTOQUIT=false"
+            "export ZSH_TMUX_AUTOQUIT=false"
           ]
           ++ optionals cfg.vi-mode.enable [
-            "ZVM_VI_SURROUND_BINDKEY='s-prefix'"
+            "export ZVM_VI_SURROUND_BINDKEY='s-prefix'"
           ]
           ++ optionals cfg.zoxide.enable [
-            "ZOXIDE_CMD_OVERRIDE='cd'"
+            "export ZOXIDE_CMD_OVERRIDE='cd'"
           ]
           ++ [ cfg.envExtra ]
         );
