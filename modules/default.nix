@@ -79,7 +79,7 @@ with lib;
             "export LANG=en_US.UTF-8"
           ]
           ++ optionals neovim.enable [
-            "expoert EDITOR='nvim'"
+            "export EDITOR='nvim'"
           ]
           ++ optionals tmux.enable [
             "export ZSH_TMUX_AUTOSTART=true"
