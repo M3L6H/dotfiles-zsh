@@ -4,6 +4,10 @@
 
 ## TBD
 
+### Added
+
+- unlock keychain on SSH login if it is not already unlocked
+
 ### Fixed
 
 - use optionalAttrs instead of mkIf for impermanence config
