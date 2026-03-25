@@ -64,6 +64,18 @@ nix() {
   fi
 }
 
+if [ -n "$SSH_CLIENT" ]; then
+  LOCKED="$(busctl --user get-property org.freedesktop.secrets /org/freedesktop/secrets/collection/login org.freedesktop.Secret.Collection Locked 2>/dev/null | awk '{printf "%s", $2}')"
+
+  if "$LOCKED"; then
+    printf 'Unlock keyring (enter password for %s): ' "$USER"
+    read -s PASS
+    echo ""
+    printf '%s' "$PASS" | gnome-keyring-daemon --unlock --replace >/dev/null 2>&1
+    unset PASS
+  fi
+fi
+
 
 
 if [[ $TERM != "dumb" ]]; then
