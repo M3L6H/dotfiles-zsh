@@ -145,6 +145,7 @@ with lib;
           '';
           plugins = [
             "git"
+            "git-auto-fetch"
           ]
           ++ optionals tmux.enable [
             "tmux"
