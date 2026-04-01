@@ -7,6 +7,7 @@
 ### Added
 
 - unlock keychain on SSH login if it is not already unlocked
+- git-auto-fetch plugin
 
 ### Fixed
 
