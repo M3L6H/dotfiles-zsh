@@ -94,10 +94,9 @@ with lib;
           ++ optionals cfg.vi-mode.enable [
             "export ZVM_VI_SURROUND_BINDKEY='s-prefix'"
           ]
-          ++ optionals cfg.zoxide.enable [
-            "export ZOXIDE_CMD_OVERRIDE='cd'"
+          ++ [
+            cfg.envExtra
           ]
-          ++ [ cfg.envExtra ]
         );
 
         history.expireDuplicatesFirst = true;
@@ -133,7 +132,9 @@ with lib;
               fi
             ''
           ]
-          ++ [ cfg.initContent ]
+          ++ [
+            cfg.initContent
+          ]
         );
 
         oh-my-zsh = {
@@ -149,9 +150,6 @@ with lib;
           ]
           ++ optionals tmux.enable [
             "tmux"
-          ]
-          ++ optionals cfg.zoxide.enable [
-            "zoxide"
           ]
           ++ optionals cfg.vi-mode.enable [
             "zsh-vi-mode"
