@@ -7,10 +7,11 @@ if [[ -z "$__HM_ZSH_SESS_VARS_SOURCED" ]]; then
   
 fi
 
+export ZOXIDE_CMD_OVERRIDE='cd'
+
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export ZVM_VI_SURROUND_BINDKEY='s-prefix'
-export ZOXIDE_CMD_OVERRIDE='cd'
 
 
 ZSH="${HOME}/.oh-my-zsh";
