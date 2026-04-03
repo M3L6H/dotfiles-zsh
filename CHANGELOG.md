@@ -14,6 +14,7 @@
 - use optionalAttrs instead of mkIf for impermanence config
 - set LANG and LC_ALL environment variables for proper text rendering
 - add export to environment vars
+- enable zsh integration for zoxide
 
 ## 0.4.4
 

@@ -23,6 +23,10 @@ with lib;
     mkIf (enable && cfg.enable) {
       programs.zoxide.enable = true;
 
+      programs.zsh.envExtra = ''
+        export ZOXIDE_CMD_OVERRIDE='cd'
+      '';
+
       home = optionalAttrs parent.impermanence.enable {
         persistence."/persist".directories = [
           ".local/share/zoxide"
