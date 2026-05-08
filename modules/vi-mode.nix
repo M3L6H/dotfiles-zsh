@@ -33,5 +33,7 @@ with lib;
       };
 
       home.file."${custom}/my-custom/zsh-vi-mode.sh".source = ./vi-mode.sh;
+
+      programs.zsh.oh-my-zsh.plugins = [ "zsh-vi-mode" ];
     };
 }
