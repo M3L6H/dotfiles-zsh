@@ -139,10 +139,10 @@ with lib;
 
         oh-my-zsh = {
           enable = true;
-          custom = "$HOME/${custom}";
           extraConfig = ''
             path=($HOME/.local/bin $path)
             export PATH
+            export ZSH_CUSTOM="$HOME/${custom}"
           '';
           plugins = [
             "git"
@@ -150,9 +150,6 @@ with lib;
           ]
           ++ optionals tmux.enable [
             "tmux"
-          ]
-          ++ optionals cfg.vi-mode.enable [
-            "zsh-vi-mode"
           ];
         };
       };

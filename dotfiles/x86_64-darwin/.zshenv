@@ -14,5 +14,5 @@ export LANG=en_US.UTF-8
 export ZVM_VI_SURROUND_BINDKEY='s-prefix'
 
 
-ZSH="$(dirname "$(dirname "$(which oh-my-zsh)")")/share/oh-my-zsh";
-ZSH_CACHE_DIR="${HOME}/.cache/oh-my-zsh";
+ZSH=$(dirname "$(dirname "$(which oh-my-zsh;)")")/share/oh-my-zsh;
+ZSH_CACHE_DIR=${HOME}/.cache/oh-my-zsh;

@@ -15,6 +15,7 @@
 - set LANG and LC_ALL environment variables for proper text rendering
 - add export to environment vars
 - enable zsh integration for zoxide
+- fix ZSH_CUSTOM and plugins
 
 ## 0.4.4
 
