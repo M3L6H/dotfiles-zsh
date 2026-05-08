@@ -15,4 +15,4 @@ export ZVM_VI_SURROUND_BINDKEY='s-prefix'
 
 
 ZSH="${HOME}/.oh-my-zsh";
-ZSH_CACHE_DIR="${HOME}/.cache/oh-my-zsh";
+ZSH_CACHE_DIR=${HOME}/.cache/oh-my-zsh;
