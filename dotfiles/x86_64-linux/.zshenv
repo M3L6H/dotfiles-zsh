@@ -1,10 +1,12 @@
-# Environment variables
+if [[ ! -o login ]]; then
+  # Environment variables
 
 
-# Only source this once
-if [[ -z "$__HM_ZSH_SESS_VARS_SOURCED" ]]; then
-  export __HM_ZSH_SESS_VARS_SOURCED=1
-  
+  # Only source this once
+  if [[ -z "${__HM_ZSH_SESS_VARS_SOURCED-}" ]]; then
+    export __HM_ZSH_SESS_VARS_SOURCED=1
+    
+  fi
 fi
 
 export ZOXIDE_CMD_OVERRIDE='cd'
