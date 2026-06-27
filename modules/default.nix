@@ -88,6 +88,8 @@ with lib;
           ]
           ++ optionals tmux.enable [
             "export ZSH_TMUX_AUTOSTART=true"
+            # Refresh env variables automatically
+            "export ZSH_TMUX_AUTOREFRESH=true"
             # Autoquit can get us locked out of our terminal if our tmux config gets jacked up
             "export ZSH_TMUX_AUTOQUIT=false"
           ]
