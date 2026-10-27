@@ -95,9 +95,9 @@ pkgs.testers.runNixOSTest {
     print("All tests passed!")
 
     # Copy files for output
-    machine.copy_from_vm("/home/${username}/.zshrc", "output")
-    machine.copy_from_vm("/home/${username}/.zshenv", "output")
-    machine.copy_from_vm(
+    machine.copy_from_machine("/home/${username}/.zshrc", "output")
+    machine.copy_from_machine("/home/${username}/.zshenv", "output")
+    machine.copy_from_machine(
         "/home/${username}/.zsh-custom/my-custom",
         "output/.zsh-custom"
     )
